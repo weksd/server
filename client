@@ -1,0 +1,38 @@
+// src/Client.java
+import java.io.*;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class Client {
+    private static final String serverHost = "localhost";//IP
+    private static final int serverPort = 8089;// gорт
+
+    public static void main(String[] args) {
+        System.out.println("Попытка подключения к серверу " + serverHost + ":" + serverPort + "...");
+        try (Socket socket = new Socket(serverHost, serverPort);//попытка подключения
+             BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
+             Scanner sc = new Scanner(System.in)) {
+            System.out.println("Подключено к серверу.");
+            System.out.println("Для инкремента счетчика на сервере введите '+'");
+            System.out.println("Для выхода из программы введите 'exit'");
+            String input;
+            while (true) {
+                System.out.print("Ваша команда >> ");
+                input = sc.nextLine(); //чтение всей строки
+                pw.println(input);
+                if (input.equalsIgnoreCase("exit")) { // Если пользователь ввел "exit", завершаем работу
+                    String response = br.readLine();//читаем последнее сообщение от сервера
+                    System.out.println("Сервер: " + response);
+                    break;
+                }
+                String response = br.readLine();//чтение ответа от сервера
+                System.out.println("Сервер: " + response);
+            }
+        } catch (IOException e) {
+            System.err.println("Ошибка при подключении или работе с сервером: " + e.getMessage());
+            System.err.println("Убедитесь, что сервер запущен и доступен по адресу " + serverHost + ":" + serverPort);
+        }
+        System.out.println("Клиент завершил работу.");
+    }
+}
