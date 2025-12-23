@@ -1,0 +1,22 @@
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("Здравствуйте! Это инструкция по запуску клиент-серверного приложения.");
+        System.out.println("---");
+        System.out.println("1. Откройте два окна командной строки (bash, CMD, PowerShell).");
+        System.out.println("2. В каждом окне перейдите в директорию, где находится этот файл (например, .../server_sys_prog/src).");
+        System.out.println("   Пример команды: cd C:\\путь\\к\\вашей\\папке\\server_sys_prog\\src");
+        System.out.println("---");
+        System.out.println("Для запуска СЕРВЕРА (в первом окне):");
+        System.out.println("   Скомпилируйте: javac ServerIncrement.java");
+        System.out.println("   Запустите:      java ServerIncrement");
+        System.out.println("   Сервер начнет работу и будет ждать подключения.");
+        System.out.println("---");
+        System.out.println("Для запуска КЛИЕНТА (во втором окне, после запуска сервера):");
+        System.out.println("   Скомпилируйте: javac Client.java");
+        System.out.println("   Запустите:      java Client");
+        System.out.println("   Клиент подключится к серверу.");
+        System.out.println("---");
+        System.out.println("В клиенте вы можете вводить '+' для инкремента числа на сервере или 'exit' для выхода.");
+        System.out.println("Удачи!");
+    }
+}
