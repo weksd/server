@@ -1,0 +1,53 @@
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+public class ServerIncrement {
+    private static final int serverPort = 8089; //порт
+    private static int counter = 0;
+    public static void main(String[] args) {
+        try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
+            System.out.println("Сервер запущен. Ожидание подключений на порту " + serverPort);
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                System.out.println("Клиент подключился: " + clientSocket.getInetAddress().getHostAddress());
+                //новый поток для обработки каждого клиента для возможности параллельной обработки
+                new Thread(() -> handleClient(clientSocket)).start();
+            }
+        } catch (IOException e) {
+            System.err.println("Ошибка сервера: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    private static void handleClient(Socket clientSocket) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+             PrintWriter pw = new PrintWriter(clientSocket.getOutputStream(), true)) { //тру для автосброса
+
+            String clientMessage;
+            while ((clientMessage = br.readLine()) != null) { //считывание соо от клиента
+                System.out.println("От клиента " + clientSocket.getInetAddress().getHostAddress() + ": " + clientMessage);
+
+                if (clientMessage.equalsIgnoreCase("exit")) {
+                    pw.println("До свидания!");
+                    System.out.println("Клиент " + clientSocket.getInetAddress().getHostAddress() + " отключился.");
+                    break;
+                } else if (clientMessage.equals("+")) {
+                    //синхрон доступа к счетчику, чтобы избежать проблем при параллельной работе
+                    synchronized (ServerIncrement.class) {
+                        counter++;
+                    }
+                    pw.println("Текущее значение счетчика: " + counter);
+                } else {
+                    pw.println("Неизвестная команда. Введите '+' для инкремента или 'exit' для выхода.");
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Ошибка при работе с клиентом " + clientSocket.getInetAddress().getHostAddress() + ": " + e.getMessage());
+        } finally {
+            try {
+                clientSocket.close(); //закрыие сокета клиента
+            } catch (IOException e) {
+                System.err.println("Ошибка при закрытии сокета клиента: " + e.getMessage());
+            }
+        }
+    }
+}
